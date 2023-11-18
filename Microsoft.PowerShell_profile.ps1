@@ -1,5 +1,5 @@
 # oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\unicorn.omp.json" | Invoke-Expression
-oh-my-posh init pwsh --config "~/ohmyposh.omp.json" | Invoke-Expression
+oh-my-posh init pwsh --config "./ohmyposh.omp.json" | Invoke-Expression
 Import-Module -Name Terminal-Icons
 
 # fzf options
