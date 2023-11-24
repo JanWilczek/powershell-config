@@ -21,6 +21,9 @@ function which ($command) {
 # Add utilities to the Path but only in the terminal
 $env:Path += ';D:\IT\Rust Projects\next_weeks_dates\target\release'
 
+# Disable ugly (venv) display
+$env:VIRTUAL_ENV_DISABLE_PROMPT = 1
+
 # Aliases
 Set-Alias e explorer
 Set-Alias l ls
