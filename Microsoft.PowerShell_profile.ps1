@@ -1,5 +1,13 @@
+if ($IsMacOS) {
+    $HOMEBREW_PREFIX = '/opt/homebrew'
+    # Add-Content -Path $PROFILE.CurrentUserAllHosts -Value '$($HOMEBREW_PREFIX/bin/brew shellenv) | Invoke-Expression'
+    $env:PATH += ':$HOMEBREW_PREFIX/bin'
+    $env:PATH += ':/Users/jawi/dev/flutter/bin'
+}
+
 # oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\unicorn.omp.json" | Invoke-Expression
-oh-my-posh init pwsh --config "~/Documents/PowerShell/ohmyposh.omp.json" | Invoke-Expression
+
+oh-my-posh init pwsh --config "$PSScriptRoot/ohmyposh.omp.json" | Invoke-Expression
 Import-Module -Name Terminal-Icons
 
 # fzf options
@@ -19,7 +27,9 @@ function which ($command) {
 } 
 
 # Add utilities to the Path but only in the terminal
-$env:Path += ';D:\IT\Rust Projects\next_weeks_dates\target\release'
+if ($IsWindows) {
+    $env:Path += ';D:\IT\Rust Projects\next_weeks_dates\target\release'
+}
 
 # Disable ugly (venv) display
 $env:VIRTUAL_ENV_DISABLE_PROMPT = 1
