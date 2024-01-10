@@ -117,7 +117,7 @@ function gd { git diff $args }
 # Set-Alias gf git fetch
 # Set-Alias gfa git fetch --all --prune --jobs=10
 # Set-Alias gfg git ls-files | grep
-# Set-Alias gfo git fetch origin
+function gfo { git fetch origin $args }
 # Set-Alias gg git gui citool
 # Set-Alias gga git gui citool --amend
 # # Set-Alias ggpull git pull origin "$(git_current_branch)"
