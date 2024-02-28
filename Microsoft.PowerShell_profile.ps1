@@ -29,6 +29,28 @@ function which ($command) {
 # Add utilities to the Path but only in the terminal
 if ($IsWindows) {
     $env:Path += ';D:\IT\Rust Projects\next_weeks_dates\target\release'
+
+    # From https://github.com/majkinetor/posh/blob/master/MM_Admin/Invoke-Environment.ps1
+    function Invoke-Environment {
+        param
+        (
+            # Any cmd shell command, normally a configuration batch file.
+            [Parameter(Mandatory=$true)]
+            [string] $Command
+        )
+
+        $Command = "`"" + $Command + "`""
+        cmd /c "$Command > nul 2>&1 && set" | . { process {
+            if ($_ -match '^([^=]+)=(.*)') {
+                [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2])
+            }
+        }}
+
+    }
+
+    function init_msvc {
+        Invoke-Environment 'C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat'
+    }
 }
 
 # Disable ugly (venv) display
