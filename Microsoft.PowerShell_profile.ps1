@@ -264,3 +264,8 @@ function settings { code $PROFILE }
 
 function wolfsound { cd "~\Documents\Jan\WolfSound" }
 Set-Alias grep Select-String
+
+function cmb { cmake --build build }
+function cmc { cmake -S . -B build }
+function cmcp { cmake --preset default }
+
