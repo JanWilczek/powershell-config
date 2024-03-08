@@ -64,7 +64,8 @@ Set-Alias l ls
 # Set-Alias cbuild cmake -S . -B build  
 # Set-Alias cmake2 C:\Android\Sdk\cmake\3.18.1\bin\cmake.exe  
 # Set-Alias - cd -
-# Set-Alias ... ../..
+function ... { cd ..\.. }
+function .... { cd ..\..\.. }
 # Set-Alias .... ../../..
 # Set-Alias ..... ../../../..
 # Set-Alias ...... ../../../../..
