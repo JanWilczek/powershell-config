@@ -133,7 +133,7 @@ function gco { git checkout $args }
 function gd { git diff $args }
 # Set-Alias gdca git diff --cached
 # Set-Alias gdcw git diff --cached --word-diff
-# Set-Alias gds git diff --staged
+function gds { git diff --staged $args }
 # Set-Alias gdt git diff-tree --no-commit-id --name-only -r
 # # Set-Alias gdup git diff @{upstream}
 # Set-Alias gdw git diff --word-diff
