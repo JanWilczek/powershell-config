@@ -30,6 +30,10 @@ function which ($command) {
 if ($IsWindows) {
     $env:Path += ';D:\IT\Rust Projects\next_weeks_dates\target\release'
 
+    function plantuml {
+        java -jar 'D:\Programy\bin\plantuml.jar' $args
+    }
+
     # From https://github.com/majkinetor/posh/blob/master/MM_Admin/Invoke-Environment.ps1
     function Invoke-Environment {
         param
