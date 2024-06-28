@@ -1,0 +1,19 @@
+diff --git a/Microsoft.PowerShell_profile.ps1 b/Microsoft.PowerShell_profile.ps1
+index fc602ae..390f85c 100644
+--- a/Microsoft.PowerShell_profile.ps1
++++ b/Microsoft.PowerShell_profile.ps1
+@@ -16,10 +16,10 @@ Set-PsFzfOption -EnableAliasFuzzyEdit -PSReadLineChordProvider 'Ctrl+f' -PSReadL
+ # $env:EDITOR = "nvim"
+ 
+ # Set Some Option for PSReadLine to show the history of our typed commands
+-Set-PSReadLineOption -PredictionSource History
+-Set-PSReadLineOption -PredictionViewStyle ListView
+-Set-PSReadLineOption -EditMode Windows
+-# Set-PSReadLineOption -PredictionSource None
++# Set-PSReadLineOption -PredictionSource History
++# Set-PSReadLineOption -PredictionViewStyle ListView
++# Set-PSReadLineOption -EditMode Windows
++Set-PSReadLineOption -PredictionSource None
+ 
+ # Utility Command that tells you where the absolute path of commandlets are
+ function which ($command) {
