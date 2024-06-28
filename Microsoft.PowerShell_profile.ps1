@@ -16,15 +16,16 @@ Set-PsFzfOption -EnableAliasFuzzyEdit -PSReadLineChordProvider 'Ctrl+f' -PSReadL
 # $env:EDITOR = "nvim"
 
 # Set Some Option for PSReadLine to show the history of our typed commands
-Set-PSReadLineOption -PredictionSource History 
-Set-PSReadLineOption -PredictionViewStyle ListView 
-Set-PSReadLineOption -EditMode Windows 
+Set-PSReadLineOption -PredictionSource History
+Set-PSReadLineOption -PredictionViewStyle ListView
+Set-PSReadLineOption -EditMode Windows
+# Set-PSReadLineOption -PredictionSource None
 
-# Utility Command that tells you where the absolute path of commandlets are 
-function which ($command) { 
- Get-Command -Name $command -ErrorAction SilentlyContinue | 
- Select-Object -ExpandProperty Path -ErrorAction SilentlyContinue 
-} 
+# Utility Command that tells you where the absolute path of commandlets are
+function which ($command) {
+ Get-Command -Name $command -ErrorAction SilentlyContinue |
+ Select-Object -ExpandProperty Path -ErrorAction SilentlyContinue
+}
 
 # Add utilities to the Path but only in the terminal
 if ($IsWindows) {
@@ -68,8 +69,8 @@ Set-Alias e explorer
 Set-Alias l ls
 # Set-Alias ls ls --show-control-chars -F --color
 # Set-Alias vi vim
-# Set-Alias cbuild cmake -S . -B build  
-# Set-Alias cmake2 C:\Android\Sdk\cmake\3.18.1\bin\cmake.exe  
+# Set-Alias cbuild cmake -S . -B build 
+# Set-Alias cmake2 C:\Android\Sdk\cmake\3.18.1\bin\cmake.exe 
 # Set-Alias - cd -
 function ... { cd ..\.. }
 function .... { cd ..\..\.. }
@@ -114,7 +115,7 @@ function ga { git add $args }
 # Set-Alias gc! git commit -v --amend
 # Set-Alias gca git commit -v -a
 # Set-Alias gca! git commit -v -a --amend
-function gcam { git commit -a -m $args } 
+function gcam { git commit -a -m $args }
 # Set-Alias gcan! git commit -v -a --no-edit --amend
 # Set-Alias gcans! git commit -v -a -s --no-edit --amend
 # Set-Alias gcas git commit -a -s
@@ -166,7 +167,7 @@ function gll { git pull $args }
 # Set-Alias glgm git log --graph --max-count=10
 # Set-Alias glgp git log --stat -p
 # Set-Alias glo git log --oneline --decorate
-# Set-Alias globurl noglob urlglobber 
+# Set-Alias globurl noglob urlglobber
 # Set-Alias glog git log --oneline --decorate --graph
 # Set-Alias gloga git log --oneline --decorate --graph --all
 # Set-Alias glp _git_log_prettily
