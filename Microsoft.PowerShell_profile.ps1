@@ -61,6 +61,20 @@ if ($IsWindows) {
     init_msvc
 }
 
+# This function tells Windows Terminal what the CWD is.
+# From https://learn.microsoft.com/en-us/windows/terminal/tutorials/new-tab-same-directory
+# But it overrides the nice oh-my-posh prompt
+# function prompt {
+#   $loc = $executionContext.SessionState.Path.CurrentLocation;
+#
+#   $out = ""
+#   if ($loc.Provider.Name -eq "FileSystem") {
+#     $out += "$([char]27)]9;9;`"$($loc.ProviderPath)`"$([char]27)\"
+#   }
+#   $out += "PS $loc$('>' * ($nestedPromptLevel + 1)) ";
+#   return $out
+# }
+
 # Disable ugly (venv) display
 $env:VIRTUAL_ENV_DISABLE_PROMPT = 1
 
