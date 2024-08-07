@@ -113,10 +113,10 @@ function ga { git add $args }
 # Set-Alias gapt git apply --3way
 # Set-Alias gau git add --update
 # Set-Alias gav git add --verbose
-# Set-Alias gb git branch
-# Set-Alias gbD git branch -D
-# Set-Alias gba git branch -a
-# Set-Alias gbd git branch -d
+function gb { git branch $args }
+function gbD { git branch -D $args }
+function gba { git branch -a $args }
+function gbd { git branch -d $args }
 # Set-Alias gbl git blame -b -w
 # Set-Alias gbnm git branch --no-merged
 # Set-Alias gbr git branch --remote
