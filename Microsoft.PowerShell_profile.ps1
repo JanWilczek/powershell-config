@@ -16,7 +16,8 @@ Set-PsFzfOption -EnableAliasFuzzyEdit -PSReadLineChordProvider 'Ctrl+f' -PSReadL
 # $env:EDITOR = "nvim"
 
 # Set Some Option for PSReadLine to show the history of our typed commands
-Set-PSReadLineOption -PredictionSource History
+Import-Module -Name CompletionPredictor
+Set-PSReadLineOption -PredictionSource HistoryAndPlugin
 Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -EditMode Windows
 # Set-PSReadLineOption -PredictionSource None
@@ -292,4 +293,7 @@ function cmb { cmake --build build $args }
 function cmc { cmake -S . -B build $args }
 function cmcp { cmake --preset $args }
 function cmcpd { cmake --preset default $args }
+
+# Git helper must come after the aliases
+Import-Module posh-git
 
