@@ -293,6 +293,7 @@ function cmb { cmake --build build $args }
 function cmc { cmake -S . -B build $args }
 function cmcp { cmake --preset $args }
 function cmcpd { cmake --preset default $args }
+function ctp { ctest --preset $args }
 
 # Git helper must come after the aliases
 Import-Module posh-git
