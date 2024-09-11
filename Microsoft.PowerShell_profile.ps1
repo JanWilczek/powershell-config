@@ -59,7 +59,7 @@ if ($IsWindows) {
     }
 
     # Invoke immediately
-    init_msvc
+    # init_msvc
 }
 
 # This function tells Windows Terminal what the CWD is.
