@@ -31,6 +31,7 @@ function which ($command) {
 # Add utilities to the Path but only in the terminal
 if ($IsWindows) {
     $env:Path += ';D:\IT\Rust Projects\next_weeks_dates\target\release'
+    $env:Path += ';C:\Users\admin\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-7.1-full_build\bin'
 
     function plantuml {
         java -jar 'D:\Programy\bin\plantuml.jar' $args
