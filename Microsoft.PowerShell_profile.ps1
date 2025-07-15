@@ -64,6 +64,10 @@ if ($IsWindows) {
 
     # Use fnm for managing NodeJS version
     fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
+
+    function wm {
+        nvim 'C:\Users\admin\Dropbox\workingmemory.md'
+    }
 }
 
 # This function tells Windows Terminal what the CWD is.
