@@ -303,6 +303,7 @@ function cmcp { cmake --preset $args }
 function cmcpd { cmake --preset default $args }
 function ctp { ctest --preset $args }
 function lg { lazygit $args }
+function devsession { & "$HOME\.config\tmux\dev_preset.ps1" }
 
 # Git helper must come after the aliases
 Import-Module posh-git
