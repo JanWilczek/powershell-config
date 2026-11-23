@@ -7,30 +7,40 @@ if ($IsMacOS) {
 
 # oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\unicorn.omp.json" | Invoke-Expression
 
-# oh-my-posh: cache the generated init script and dot-source it instead of
-# spawning oh-my-posh.exe and Invoke-Expression-ing its output on every start.
-# The cache's first line records the exe path; the cache is regenerated when
-# the theme or the exe changes (or the exe moved).
+# oh-my-posh: cache the init scripts and dot-source them instead of spawning
+# oh-my-posh.exe and Invoke-Expression-ing its output on every start.
+# - .omp-init.cache.ps1: omp's own loader line (sets the session env vars and,
+#   with "async": true in the theme, installs the async trampoline), pointed at
+#   the core script below. Its first line records the exe path.
+# - .omp-core.cache.ps1: the full prompt script, with the static continuation
+#   prompt precomputed to avoid an exe call per start.
+# Both are regenerated when the theme or the exe changes (or the exe moved).
 $ompConfig = Join-Path $PSScriptRoot 'ohmyposh.omp.json'
 $ompCache = Join-Path $PSScriptRoot '.omp-init.cache.ps1'
+$ompCore = Join-Path $PSScriptRoot '.omp-core.cache.ps1'
 $ompCacheTime = [IO.File]::GetLastWriteTimeUtc($ompCache) # year 1601 if missing
 $ompExe = if ($ompCacheTime.Year -gt 1601) { (Get-Content -LiteralPath $ompCache -TotalCount 1) -replace '^# omp-exe: ' }
-if (-not $ompExe -or -not [IO.File]::Exists($ompExe) -or
+if (-not $ompExe -or -not [IO.File]::Exists($ompExe) -or -not [IO.File]::Exists($ompCore) -or
     $ompCacheTime -lt [IO.File]::GetLastWriteTimeUtc($ompExe) -or
     $ompCacheTime -lt [IO.File]::GetLastWriteTimeUtc($ompConfig)) {
     $ompExe = (Get-Command oh-my-posh -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1).Source
     if ($ompExe) {
+        $ompSessionId = "\`$env:POSH_SESSION_ID = ['`"][0-9a-fA-F-]+['`"]"
+        # Loader: make the hard-coded session ID unique per shell, and run our core cache.
+        $ompLoader = (& $ompExe init pwsh --config="$ompConfig") -join "`n"
+        $ompLoader = $ompLoader -replace $ompSessionId, '$env:POSH_SESSION_ID = [guid]::NewGuid().ToString()'
+        $ompLoader = $ompLoader -replace "& '[^']+\\init\.-?[0-9]+\.ps1'", "& '$($ompCore -replace "'", "''")'"
+        # Core: drop the env-var line (the loader sets it) and precompute the continuation prompt.
         $ompScript = (& $ompExe init pwsh --config="$ompConfig" --print) -join "`n"
-        # The generated script hard-codes a session ID; make it unique per shell.
-        $ompScript = $ompScript -replace "\`$env:POSH_SESSION_ID = '[0-9a-fA-F-]+'", '$env:POSH_SESSION_ID = [guid]::NewGuid().ToString()'
-        # The continuation prompt is static per theme; precompute it to avoid an exe call per start.
+        $ompScript = $ompScript -replace "^$ompSessionId;[^\n]*\n", ''
         $ompSecondary = ((& $ompExe print secondary --shell=pwsh --config="$ompConfig") -join "`n") -replace "'", "''"
         $ompScript = $ompScript.Replace('((Invoke-Utf8Posh @("print", "secondary", "--shell=$script:ShellName")) -join "`n")', "'$ompSecondary'")
-        "# omp-exe: $ompExe`n$ompScript" | Set-Content -LiteralPath $ompCache -Encoding utf8
+        $ompScript | Set-Content -LiteralPath $ompCore -Encoding utf8
+        "# omp-exe: $ompExe`n$ompLoader" | Set-Content -LiteralPath $ompCache -Encoding utf8
     }
 }
 if ($ompExe) { . $ompCache }
-Remove-Variable ompConfig, ompCache, ompCacheTime, ompExe, ompScript, ompSecondary -ErrorAction SilentlyContinue
+Remove-Variable ompConfig, ompCache, ompCore, ompCacheTime, ompExe, ompSessionId, ompLoader, ompScript, ompSecondary -ErrorAction SilentlyContinue
 
 # This does not work for some reason: crashes the prompt
 # $env:EDITOR = "nvim"
