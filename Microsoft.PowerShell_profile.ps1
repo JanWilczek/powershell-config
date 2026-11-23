@@ -7,16 +7,35 @@ if ($IsMacOS) {
 
 # oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\unicorn.omp.json" | Invoke-Expression
 
-oh-my-posh init pwsh --config "$PSScriptRoot/ohmyposh.omp.json" | Invoke-Expression
-Import-Module -Name Terminal-Icons
+# oh-my-posh: cache the generated init script and dot-source it instead of
+# spawning oh-my-posh.exe and Invoke-Expression-ing its output on every start.
+# The cache's first line records the exe path; the cache is regenerated when
+# the theme or the exe changes (or the exe moved).
+$ompConfig = Join-Path $PSScriptRoot 'ohmyposh.omp.json'
+$ompCache = Join-Path $PSScriptRoot '.omp-init.cache.ps1'
+$ompCacheTime = [IO.File]::GetLastWriteTimeUtc($ompCache) # year 1601 if missing
+$ompExe = if ($ompCacheTime.Year -gt 1601) { (Get-Content -LiteralPath $ompCache -TotalCount 1) -replace '^# omp-exe: ' }
+if (-not $ompExe -or -not [IO.File]::Exists($ompExe) -or
+    $ompCacheTime -lt [IO.File]::GetLastWriteTimeUtc($ompExe) -or
+    $ompCacheTime -lt [IO.File]::GetLastWriteTimeUtc($ompConfig)) {
+    $ompExe = (Get-Command oh-my-posh -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1).Source
+    if ($ompExe) {
+        $ompScript = (& $ompExe init pwsh --config="$ompConfig" --print) -join "`n"
+        # The generated script hard-codes a session ID; make it unique per shell.
+        $ompScript = $ompScript -replace "\`$env:POSH_SESSION_ID = '[0-9a-fA-F-]+'", '$env:POSH_SESSION_ID = [guid]::NewGuid().ToString()'
+        # The continuation prompt is static per theme; precompute it to avoid an exe call per start.
+        $ompSecondary = ((& $ompExe print secondary --shell=pwsh --config="$ompConfig") -join "`n") -replace "'", "''"
+        $ompScript = $ompScript.Replace('((Invoke-Utf8Posh @("print", "secondary", "--shell=$script:ShellName")) -join "`n")', "'$ompSecondary'")
+        "# omp-exe: $ompExe`n$ompScript" | Set-Content -LiteralPath $ompCache -Encoding utf8
+    }
+}
+if ($ompExe) { . $ompCache }
+Remove-Variable ompConfig, ompCache, ompCacheTime, ompExe, ompScript, ompSecondary -ErrorAction SilentlyContinue
 
-# fzf options
-Set-PsFzfOption -EnableAliasFuzzyEdit -PSReadLineChordProvider 'Ctrl+f' -PSReadLineChordReverseHistory 'Ctrl+r' -EnableAliasFuzzyGitStatus
 # This does not work for some reason: crashes the prompt
 # $env:EDITOR = "nvim"
 
 # Set Some Option for PSReadLine to show the history of our typed commands
-Import-Module -Name CompletionPredictor
 Set-PSReadLineOption -PredictionSource HistoryAndPlugin
 Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -EditMode Windows
@@ -305,6 +324,14 @@ function ctp { ctest --preset $args }
 function lg { lazygit $args }
 function devsession { & "$HOME\.config\tmux\dev_preset.ps1" }
 
-# Git helper must come after the aliases
-Import-Module posh-git
+# Heavy modules (~2 s combined) are loaded once, right after the first prompt is
+# shown, so they don't delay startup. Until then: no ls icons, no fzf key
+# bindings, no git tab completion. posh-git must come after the aliases above.
+$null = Register-EngineEvent -SourceIdentifier PowerShell.OnIdle -MaxTriggerCount 1 -Action {
+    Import-Module -Name Terminal-Icons -Global
+    Import-Module -Name PSFzf -Global
+    Set-PsFzfOption -EnableAliasFuzzyEdit -PSReadLineChordProvider 'Ctrl+f' -PSReadLineChordReverseHistory 'Ctrl+r' -EnableAliasFuzzyGitStatus
+    Import-Module -Name CompletionPredictor -Global
+    Import-Module -Name posh-git -Global
+}
 
