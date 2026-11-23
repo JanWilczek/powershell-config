@@ -81,8 +81,8 @@ if ($IsWindows) {
     # Invoke immediately
     # init_msvc
 
-    # Use fnm for managing NodeJS version
-    fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
+    # Use fnm for managing NodeJS version: initialised in the deferred block at
+    # the end of this file, so node/npm are available ~2 s after the prompt.
 
     function wm {
         nvim 'C:\Users\admin\Dropbox\workingmemory.md'
@@ -325,9 +325,14 @@ function lg { lazygit $args }
 function devsession { & "$HOME\.config\tmux\dev_preset.ps1" }
 
 # Heavy modules (~2 s combined) are loaded once, right after the first prompt is
-# shown, so they don't delay startup. Until then: no ls icons, no fzf key
-# bindings, no git tab completion. posh-git must come after the aliases above.
+# shown, so they don't delay startup. Until then: no node/npm (fnm), no ls
+# icons, no fzf key bindings, no git tab completion. posh-git must come after
+# the aliases above.
 $null = Register-EngineEvent -SourceIdentifier PowerShell.OnIdle -MaxTriggerCount 1 -Action {
+    if ($IsWindows) {
+        # fnm env defines everything with global scope, so it works from here.
+        fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
+    }
     Import-Module -Name Terminal-Icons -Global
     Import-Module -Name PSFzf -Global
     Set-PsFzfOption -EnableAliasFuzzyEdit -PSReadLineChordProvider 'Ctrl+f' -PSReadLineChordReverseHistory 'Ctrl+r' -EnableAliasFuzzyGitStatus
